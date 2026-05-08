@@ -150,16 +150,20 @@ class MessageQueue {
     }
 
     async processItem(item) {
-        const { message, processor, resolve, reject } = item;
+        const { message, processor, resolve } = item;
 
         try {
             const result = await processor(message);
             resolve(result);
             return result;
         } catch (error) {
+             /*
+             CORREÇÃO: handleProcessingError já chama item.reject() internamente.
+             Chamar reject(error) novamente aqui causava double-reject na mesma Promise,
+             gerando UnhandledPromiseRejection que podia derrubar o processo.
+             */
             await this.handleProcessingError(item, error);
-            reject(error);
-            throw error;
+            // Não relança o erro — o reject já foi feito dentro de handleProcessingError.
         }
     }
 
@@ -176,6 +180,7 @@ class MessageQueue {
             }
         }
 
+        // Chama reject apenas aqui — único ponto de rejeição da Promise.
         item.reject(error);
     }
 
@@ -310,6 +315,16 @@ const AUTH_DIR = path.join(__dirname, '..', 'database', 'qr-code');
 const DATABASE_DIR = path.join(__dirname, '..', 'database');
 const GLOBAL_BLACKLIST_PATH = path.join(__dirname, '..', 'database', 'dono', 'globalBlacklist.json');
 
+ /*
+ CORREÇÃO: Cache em memória para a blacklist global.
+ Antes, o arquivo era lido do disco em CADA evento de participante, gerando
+ centenas de leituras por minuto em grupos ativos e saturando o disco.
+ Agora o cache é revalidado apenas a cada 60 segundos.
+ */
+let _globalBlacklistCache = null;
+let _globalBlacklistCacheTime = 0;
+const GLOBAL_BLACKLIST_TTL_MS = 60_000;
+
 let msgRetryCounterCache;
 let messagesCache;
 
@@ -426,12 +441,21 @@ async function loadGroupSettings(groupId) {
 }
 
 async function loadGlobalBlacklist() {
+    // CORREÇÃO: Usa cache em memória com TTL de 60s.
+    // Antes: leitura de disco a cada evento → I/O excessivo em grupos ativos.
+    const now = Date.now();
+    if (_globalBlacklistCache !== null && (now - _globalBlacklistCacheTime) < GLOBAL_BLACKLIST_TTL_MS) {
+        return _globalBlacklistCache;
+    }
     try {
         const data = await fs.readFile(GLOBAL_BLACKLIST_PATH, 'utf-8');
-        return JSON.parse(data).users || {};
+        _globalBlacklistCache = JSON.parse(data).users || {};
+        _globalBlacklistCacheTime = now;
+        return _globalBlacklistCache;
     } catch (e) {
         console.error(`❌ Erro ao ler blacklist global: ${e.message}`);
-        return {};
+        // Retorna cache antigo se existir, ou objeto vazio
+        return _globalBlacklistCache ?? {};
     }
 }
 
@@ -1213,6 +1237,21 @@ const MAX_RECONNECT_ATTEMPTS = 10;
 const MAX_403_ATTEMPTS = 3; // Máximo de 3 tentativas para erro 403
 const RECONNECT_DELAY_BASE = 5000; // 5 segundos base
 
+// CORREÇÃO: Timers do evento 'open' agora têm referência para serem cancelados
+// caso o bot desconecte antes deles dispararem, evitando timers órfãos usando socket antigo.
+let ownerMsgTimer = null;
+let subBotInitTimer = null;
+// fetchLatestBaileysVersion() faz uma requisição HTTP — se a rede estava instável
+// (causa da desconexão), essa chamada podia falhar e impedir a reconexão.
+let _cachedWAVersion = null;
+
+async function getWAVersion() {
+    if (_cachedWAVersion) return _cachedWAVersion;
+    const { version } = await fetchLatestBaileysVersion();
+    _cachedWAVersion = version;
+    return version;
+}
+
 async function createBotSocket(authDir) {
     try {
         await fs.mkdir(path.join(DATABASE_DIR, 'grupos'), { recursive: true });
@@ -1223,8 +1262,8 @@ async function createBotSocket(authDir) {
             signalRepository
         } = await useMultiFileAuthState(authDir, makeCacheableSignalKeyStore);
 
-        // Busca a versão mais recente do WhatsApp via Baileys
-        const { version } = await fetchLatestBaileysVersion();
+        // CORREÇÃO: Usa versão cacheada em vez de buscar na rede a cada reconexão.
+        const version = await getWAVersion();
         console.log(`📱 Usando versão do WhatsApp: ${version.join('.')}`);
 
         const NazunaSock = makeWASocket({
@@ -1238,7 +1277,12 @@ async function createBotSocket(authDir) {
             retryRequestDelayMs: 5000,
             qrTimeout: 180000,
             keepAliveIntervalMs: 30_000,
-            defaultQueryTimeoutMs: undefined,
+             /*
+             CORREÇÃO: defaultQueryTimeoutMs era undefined (sem timeout), causando acúmulo
+             de Promises pendentes que nunca resolviam, vazando memória ao longo do tempo.
+             60 segundos é suficiente para qualquer query normal do WhatsApp.
+             */
+            defaultQueryTimeoutMs: 60_000,
             maxMsgRetryCount: 5,
             shouldIgnoreJid: (jid) =>
                 isJidBroadcast(jid) || isJidStatusBroadcast(jid) || isJidNewsletter(jid),
@@ -1486,57 +1530,97 @@ async function createBotSocket(authDir) {
                 console.log('📱 Escaneie o QR code acima com o WhatsApp para autenticar o bot.');
             }
             if (connection === 'open') {
+                 /*
+                 CORREÇÃO: Todo o bloco de inicialização envolto em try/catch.
+                 Antes, se qualquer await aqui falhasse (ex: initializeOptimizedCaches,
+                 rentalExpirationManager.initialize), o erro era swallowed silenciosamente
+                 pelo Baileys (async void) e o bot ficava num estado inconsistente sem reconectar.
+                 */
+                try {
+                 /*
+                 CORREÇÃO: Reset dos contadores de tentativa feito aqui, após conexão confirmada.
+                 Antes era feito no início de startNazu() — antes de qualquer sucesso —
+                 fazendo o limite MAX_RECONNECT_ATTEMPTS nunca ser atingido de fato.
+                 */
+                reconnectAttempts = 0;
+                forbidden403Attempts = 0;
                 console.log(`🔄 Conexão aberta. Inicializando sistema de otimização...`);
 
-                await initializeOptimizedCaches(NazunaSock);
+                    await initializeOptimizedCaches(NazunaSock);
 
-                await updateOwnerLid(NazunaSock);
-                await performMigration(NazunaSock);
+                    await updateOwnerLid(NazunaSock);
 
-                rentalExpirationManager.nazu = NazunaSock;
-                await rentalExpirationManager.initialize();
+                     /*
+                     CORREÇÃO: performMigration é adiado para DEPOIS da inicialização completa.
+                     Antes era await direto aqui — o scan do filesystem + chamadas NazunaSock.onWhatsApp()
+                     podiam levar dezenas de segundos, fazendo o keepalive (30s) expirar e
+                     o WhatsApp fechar a conexão por inatividade logo após a abertura.
+                     */
+                     setTimeout(() => {
+                        performMigration(NazunaSock).catch(err => {
+                            console.error('❌ Erro na migração (não-bloqueante):', err.message);
+                        });
+                    }, 10_000);
 
-                attachMessagesListener();
-                startCacheCleanup(); // Inicia o sistema de limpeza de cache
+                    rentalExpirationManager.nazu = NazunaSock;
+                    await rentalExpirationManager.initialize();
 
-                // Envia mensagem de boas-vindas para o dono
-                try {
-                    const msgBotOnConfig = loadMsgBotOn();
+                    attachMessagesListener();
+                    startCacheCleanup(); // Inicia o sistema de limpeza de cache
 
-                    if (msgBotOnConfig.enabled) {
-                        // Aguarda 3 segundos para garantir que o bot está totalmente conectado
-                        setTimeout(async () => {
-                            try {
-                                const ownerJid = buildUserId(numerodono, config);
-                                await NazunaSock.sendMessage(ownerJid, {
-                                    text: msgBotOnConfig.message
-                                });
-                                console.log('✅ Mensagem de inicialização enviada para o dono');
-                            } catch (sendError) {
-                                console.error('❌ Erro ao enviar mensagem de inicialização:', sendError.message);
-                            }
-                        }, 3000);
-                    } else {
-                        console.log('ℹ️ Mensagem de inicialização desativada');
+                    // Envia mensagem de boas-vindas para o dono
+                    try {
+                        const msgBotOnConfig = loadMsgBotOn();
+
+                        if (msgBotOnConfig.enabled) {
+                             /*
+                             CORREÇÃO: Timer salvo na variável ownerMsgTimer para poder ser
+                             cancelado se o bot desconectar antes dos 3s (evita timer órfão
+                             usando socket antigo após reconexão).
+                             */
+                            if (ownerMsgTimer) clearTimeout(ownerMsgTimer);
+                            ownerMsgTimer = setTimeout(async () => {
+                                ownerMsgTimer = null;
+                                try {
+                                    const ownerJid = buildUserId(numerodono, config);
+                                    await NazunaSock.sendMessage(ownerJid, {
+                                        text: msgBotOnConfig.message
+                                    });
+                                    console.log('✅ Mensagem de inicialização enviada para o dono');
+                                } catch (sendError) {
+                                    console.error('❌ Erro ao enviar mensagem de inicialização:', sendError.message);
+                                }
+                            }, 3000);
+                        } else {
+                            console.log('ℹ️ Mensagem de inicialização desativada');
+                        }
+                    } catch (msgError) {
+                        console.error('❌ Erro ao processar mensagem de inicialização:', msgError.message);
                     }
-                } catch (msgError) {
-                    console.error('❌ Erro ao processar mensagem de inicialização:', msgError.message);
-                }
 
-                // Inicializa sub-bots automaticamente
-                try {
-                    const subBotManagerModule = await import('./utils/subBotManager.js');
-                    const subBotManager = subBotManagerModule.default ?? subBotManagerModule;
-                    console.log('🤖 Verificando sub-bots cadastrados...');
-                    setTimeout(async () => {
-                        await subBotManager.initializeAllSubBots();
-                    }, 5000);
-                } catch (error) {
-                    console.error('❌ Erro ao inicializar sub-bots:', error.message);
-                }
+                    // Inicializa sub-bots automaticamente
+                    try {
+                        const subBotManagerModule = await import('./utils/subBotManager.js');
+                        const subBotManager = subBotManagerModule.default ?? subBotManagerModule;
+                        console.log('🤖 Verificando sub-bots cadastrados...');
+                        // CORREÇÃO: Timer salvo em subBotInitTimer para cancelamento em reconexão.
+                        if (subBotInitTimer) clearTimeout(subBotInitTimer);
+                        subBotInitTimer = setTimeout(async () => {
+                            subBotInitTimer = null;
+                            await subBotManager.initializeAllSubBots();
+                        }, 5000);
+                    } catch (error) {
+                        console.error('❌ Erro ao inicializar sub-bots:', error.message);
+                    }
 
-                console.log(`✅ Bot ${nomebot} iniciado com sucesso! Prefixo: ${prefixo} | Dono: ${nomedono}`);
-                console.log(`📊 Configuração: ${messageQueue.batchSize} lotes de ${messageQueue.messagesPerBatch} mensagens (${messageQueue.batchSize * messageQueue.messagesPerBatch} msgs paralelas)`);
+                    console.log(`✅ Bot ${nomebot} iniciado com sucesso! Prefixo: ${prefixo} | Dono: ${nomedono}`);
+                    console.log(`📊 Configuração: ${messageQueue.batchSize} lotes de ${messageQueue.messagesPerBatch} mensagens (${messageQueue.batchSize * messageQueue.messagesPerBatch} msgs paralelas)`);
+                } catch (initErr) {
+                    // CORREÇÃO: Erro crítico na inicialização — loga e dispara reconexão
+                    // em vez de deixar o bot em estado parcialmente inicializado.
+                    console.error('❌ Erro crítico na inicialização pós-conexão:', initErr.message);
+                    setTimeout(() => startNazu(), 5000);
+                }
             }
             if (connection === 'close') {
                 const reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
@@ -1559,6 +1643,11 @@ async function createBotSocket(authDir) {
                     clearInterval(cacheCleanupInterval);
                     cacheCleanupInterval = null;
                 }
+
+                // CORREÇÃO: Cancela timers órfãos do evento 'open' que ainda não dispararam.
+                // Sem isso, eles usariam o socket antigo após a reconexão.
+                if (ownerMsgTimer) { clearTimeout(ownerMsgTimer); ownerMsgTimer = null; }
+                if (subBotInitTimer) { clearTimeout(subBotInitTimer); subBotInitTimer = null; }
 
                 // Tratamento especial para erro 403 (Forbidden)
                 if (reason === 403) {
@@ -1637,13 +1726,25 @@ async function startNazu() {
 
     isReconnecting = true;
 
+     /*
+     CORREÇÃO: try/finally garante que isReconnecting SEMPRE volta para false,
+     independente do caminho de execução.
+     Antes, qualquer exceção inesperada dentro de createBotSocket() que não fosse
+     capturada pelo catch deixava isReconnecting = true para sempre, travando toda
+     reconexão futura silenciosamente.
+     */
     try {
-        reconnectAttempts = 0; // Reset contador ao conectar com sucesso
-        forbidden403Attempts = 0; // Reset contador de erro 403
+         /*
+         CORREÇÃO: reconnectAttempts NÃO é mais resetado aqui.
+         Antes, era zerado logo ao entrar — ou seja, antes de qualquer tentativa ter sucesso.
+         Isso fazia o limite MAX_RECONNECT_ATTEMPTS nunca ser atingido (o contador
+         era apagado a cada ciclo). O reset correto acontece no evento 'connection.update'
+         quando connection === 'open', confirmando conexão real.
+         */
         console.log('🚀 Iniciando Nazuna...');
 
         await createBotSocket(AUTH_DIR);
-        isReconnecting = false; // Conexão estabelecida com sucesso
+        // isReconnecting = false é feito no finally abaixo
     } catch (err) {
         reconnectAttempts++;
         console.error(`❌ Erro ao iniciar o bot (tentativa ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}): ${err.message}`);
@@ -1651,7 +1752,6 @@ async function startNazu() {
         // Se excedeu tentativas, para de tentar
         if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
             console.error(`❌ Máximo de tentativas de reconexão alcançado (${MAX_RECONNECT_ATTEMPTS}). Parando...`);
-            isReconnecting = false;
             process.exit(1);
         }
 
@@ -1674,11 +1774,12 @@ async function startNazu() {
             clearTimeout(reconnectTimer);
         }
 
-        // Permite nova tentativa de reconexão após o delay
-        isReconnecting = false;
         reconnectTimer = setTimeout(() => {
             startNazu();
         }, delay);
+    } finally {
+        // CORREÇÃO: isReconnecting sempre liberado aqui — tanto em sucesso quanto em erro.
+        isReconnecting = false;
     }
 }
 
@@ -1743,7 +1844,15 @@ process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 process.on('uncaughtException', async (error) => {
-    console.error('🚨 Erro não capturado:', error.message);
+     /*
+     CORREÇÃO: Antes, o handler apenas logava o erro e não fazia nada.
+     Erros não capturados em Promises matavam o WebSocket interno silenciosamente,
+     mas o processo continuava "vivo" sem conexão ativa — o bot aparecia rodando
+     mas não respondia. Agora chama process.exit(1) para que o PM2/supervisor
+     reinicie o processo limpo e com uma nova conexão.
+     */
+    console.error('🚨 Erro não capturado — reiniciando processo:', error.message);
+    console.error(error.stack);
 
     if (error.message.includes('ENOSPC') || error.message.includes('ENOMEM')) {
         try {
@@ -1752,6 +1861,20 @@ process.on('uncaughtException', async (error) => {
             console.error('❌ Falha na limpeza de emergência:', cleanupErr.message);
         }
     }
+
+    process.exit(1);
+});
+
+ /*
+ CORREÇÃO: Handler de unhandledRejection estava completamente ausente.
+ Sem ele, Promises rejeitadas em listeners async do Baileys (que são void)
+ eram swallowed silenciosamente — o bot ficava num estado inconsistente sem log.
+ No Node 15+, unhandledRejection também derruba o processo sem stack trace útil.
+ */
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('🚨 Promise rejeitada sem tratamento:', reason);
+    // Não chama process.exit aqui pois rejeições não críticas são comuns
+    // em eventos do Baileys. O importante é logar para diagnóstico.
 });
 
 export { rentalExpirationManager, messageQueue };
