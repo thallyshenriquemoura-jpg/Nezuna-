@@ -1,5 +1,10 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/DevTokyoVx/nazuna/main/dados/midias/menu.jpg" width="200" style="border-radius: 50%;" />
+  <img 
+    src="https://raw.githubusercontent.com/DevTokyoVx/nazuna/main/dados/midias/menu.jpg"
+    width="500"
+    height="500"
+    style="border-radius: 50%; object-fit: cover;"
+  />
 </p>
 
 <h1 align="center">nazuna Bot</h1>
