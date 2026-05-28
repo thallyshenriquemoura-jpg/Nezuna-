@@ -104,7 +104,7 @@ Sim. Todo o código permanece aberto para estudos e contribuições.
 
 1️⃣ ligue o bot e use o comando #lid (# = prefixo do bot)
 
-2️⃣ acesse os arquivos do bot (dados/src/config.json
+2️⃣ acesse os arquivos do bot (dados/src/config.json)
 
 3️⃣ procure por "lidOwner": "278696501993618@lid"
 
@@ -113,7 +113,64 @@ Sim. Todo o código permanece aberto para estudos e contribuições.
 5️⃣ voltando ao arquivo do bot troquei o "278696501993618@lid" pelo oque o bot te enviou 
 
 6️⃣ exemplo: "lidOwner": "848285828@lid"
+
+7️⃣ salva o arquivo, reinicie o bot e desfrute dos comandos de dono!
 </details>
+
+<details>
+  <summary><strong>💸 Como ativar minha chave de api?</strong></summary>
+1️⃣ Acesse o site https://vexapi.com.br e crie sua conta
+
+2️⃣ Acesse a aba de planos https://vexapi.com.br/plans
+
+3️⃣ Escolha o plano ideal para você 
+
+4️⃣ Selecione o plano e efetue um pagamento 
+
+5️⃣ Dentro de um minuto você vai receber a confirmação de ativação em seu email
+
+6️⃣ Parabéns!Você ativou sua Api-key 
+</details>
+
+<details>
+  <summary><strong>🔑 Como configurar a API no bot?</strong></summary>
+
+1️⃣ Acesse https://vexapi.com.br e certifique-se de ter uma conta
+
+2️⃣ No dashboard https://vexapi.com.br/docs copie sua API-key
+
+3️⃣ Certifique-se de ter configurado o número do dono para o seu
+
+4️⃣ Use o comando #apikey e insira a api-key que você copiou na frente do comando
+
+exemplo: #apikey asnfowiubvkawo
+
+5️⃣ Espere o bot reiniciar e desfrute dos comandos que necessitam de API!
+</details>
+
+<details>
+  <summary><strong>⌚ Como funcionam as requisições diárias da Vex API?</strong></summary>
+
+Diferente de muitas APIs, a Vex API foi pensada para oferecer uma experiência mais justa e confortável para o usuário.
+
+Exemplo: no plano de <strong>100 requisições diárias</strong>, você recebe <strong>100 usos novos todos os dias</strong> durante todo o período da assinatura.
+
+Isso significa que as requisições são renovadas diariamente, permitindo utilizar a API continuamente sem precisar esperar o mês acabar para recuperar o limite.
+
+Esse plano é ideal para bots menores, testes ou usuários que utilizam os recursos de forma moderada.
+
+Agora, se o seu bot possui muitos grupos ou utiliza bastante comandos como:
+<ul>
+  <li>🎵 Play</li>
+  <li>📱 TikTok</li>
+  <li>📸 Instagram</li>
+  <li>🎬 Downloads em geral</li>
+</ul>
+
+é recomendado utilizar planos com <strong>1000 requisições diárias ou superiores</strong>, garantindo mais estabilidade e evitando atingir o limite rapidamente.
+
+</details>
+
 
 <details>
   <summary><strong>🤝 Como contribuir?</strong></summary>
