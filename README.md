@@ -6,7 +6,11 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/STATUS-ATIVO-success?style=for-the-badge" alt="Status: Ativo" />
+  
+  <img src="https://img.shields.io/badge/VERSÃO-v3.0-blue?style=for-the-badge" alt="Versão" />
+  
   <img src="https://img.shields.io/github/stars/DevTokyoVx/nazuna?style=for-the-badge&color=yellow&label=Estrelas" alt="Estrelas" />
+  
   <img src="https://img.shields.io/github/forks/DevTokyoVx/nazuna?style=for-the-badge&color=blue&label=Forks" alt="Forks" />
 </p>
 
@@ -24,7 +28,7 @@ Atualmente, o bot segue em **desenvolvimento ativo**, recebendo atualizações, 
 
 <p align="center">
   <a href="https://github.com/DevTokyoVx/nazuna">
-    <img src="https://img.shields.io/badge/Projeto%20Atual-Tokyo%20Dev-181717?style=for-the-badge&logo=github" />
+    <img src="https://img.shields.io/badge/Projeto%20Atual-Dev%20Tokyo-181717?style=for-the-badge&logo=github" />
   </a>
 </p>
 
@@ -56,6 +60,94 @@ Atualmente, o bot segue em **desenvolvimento ativo**, recebendo atualizações, 
   <br/>
   <sub>Total de visitas ao repositório</sub>
 </p>
+
+
+
+---
+
+# ❓ Perguntas Frequentes
+
+<details>
+  <summary><strong>💰 É pago?</strong></summary>
+
+Não. A Nazuna Bot é totalmente gratuita e open source para a comunidade.
+</details>
+
+<details>
+  <summary><strong>🛠️ O projeto ainda recebe atualizações?</strong></summary>
+
+Sim. O projeto continua em desenvolvimento ativo sob manutenção do Tokyo.
+</details>
+
+<details>
+  <summary><strong>📱 Funciona em qualquer celular?</strong></summary>
+
+Sim, desde que o WhatsApp seja compatível com multi-dispositivos.
+</details>
+
+<details>
+  <summary><strong>☁️ Posso hospedar em VPS?</strong></summary>
+
+Sim. A Nazuna funciona normalmente em VPS Linux, Pterodactyl e hospedagens Node.js.
+</details>
+
+<details>
+  <summary><strong>📦 O código é open source?</strong></summary>
+
+Sim. Todo o código permanece aberto para estudos e contribuições.
+</details>
+
+<details>
+  <summary><strong>🤝 Como contribuir?</strong></summary>
+
+Você pode abrir Pull Requests, Issues ou sugerir melhorias no repositório oficial.
+</details>
+
+
+
+---
+
+# ⚙️ Instalação no termux 
+
+## 📱Passo a passo para instalar a nazuna bot no termux
+
+### 1️⃣ Entre na pasta sdcard (é melhor caso você queira editar o bot)
+
+```bash
+cd /sdcard
+
+---
+
+2️⃣ Clone o repositório oficial 
+
+git clone https://github.com/DevTokyoVx/nazuna
+
+---
+
+3️⃣ Entre na pasta da nazuna bot
+
+cd /sdcard/nazuna
+
+---
+
+4️⃣ Inicie o bot (Vai baixar as dependências automaticamente)
+
+npm start
+
+---
+
+5️⃣ Escolha entre conectar via qr-code ou pairingCode 
+
+01- qr-code
+02- pairingCode 
+
+---
+
+
+<p align="center">
+  <sub>Pronto,você instalou a nazuna bot!</sub>
+</p>
+```
 
 ---
 

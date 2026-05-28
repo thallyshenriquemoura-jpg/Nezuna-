@@ -573,6 +573,7 @@ async function handleGroupParticipantsUpdate(NazunaSock, inf) {
                 global.CAPTCHA_LOCK = global.CAPTCHA_LOCK || new Set();
 
                 const membersToWelcome = [];
+                const membersToWelcome2 = [];
                 const membersToRemove = [];
                 const removalReasons = [];
 
@@ -686,6 +687,11 @@ async function handleGroupParticipantsUpdate(NazunaSock, inf) {
                         console.log(`✅ Enviando welcome para ${participantNumber}`);
                         membersToWelcome.push(participant);
                     }
+
+                    if (groupSettings.bemvindo2) {
+                        console.log(`✅ Enviando welcome2 (sem foto) para ${participantNumber}`);
+                        membersToWelcome2.push(participant);
+                    }
                 }
 
 
@@ -708,6 +714,20 @@ async function handleGroupParticipantsUpdate(NazunaSock, inf) {
                     );
 
                     await NazunaSock.sendMessage(from, message);
+                }
+
+                if (membersToWelcome2.length) {
+                    const mentions = membersToWelcome2.map(p => p);
+                    const replacements = {
+                        '#numerodele#': membersToWelcome2.map(p => `@${p.split('@')[0]}`).join(', '),
+                        '#nomedogp#': groupMetadata.subject,
+                        '#desc#': groupMetadata.desc || 'Nenhuma',
+                        '#membros#': groupMetadata.participants.length,
+                    };
+                    const defaultText2 = "╭━━━⊱ 🌟 *BEM-VINDO(A/S)!* 🌟 ⊱━━━╮\n│\n│ 👤 #numerodele#\n│\n│ 🏠 Grupo: *#nomedogp#*\n│ 👥 Membros: *#membros#*\n│\n╰━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n✨ *Seja bem-vindo(a/s) ao grupo!* ✨";
+                    const chosenText2 = groupSettings.textbv2 || defaultText2;
+                    const text2 = formatMessageText(chosenText2, replacements);
+                    await NazunaSock.sendMessage(from, { text: text2, mentions });
                 }
 
                 break;

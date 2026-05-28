@@ -1849,7 +1849,7 @@ async function processUserMessages(data, nazu = null, ownerNumber = null, person
       try {
         // Chamada única para processamento com contexto
         const response = (await makeCognimaRequest(
-          'moonshotai/kimi-k2-instruct',
+          'moonshotai/kimi-k2.6',
           JSON.stringify(userInput),
           selectedPrompt,
           historico[userId] || []

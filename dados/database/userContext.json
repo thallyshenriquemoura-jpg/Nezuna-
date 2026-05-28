@@ -20,9 +20,9 @@
       "familia": []
     },
     "historico_conversa": {
-      "total_mensagens": 4,
+      "total_mensagens": 5,
       "primeira_conversa": "2026-03-20T19:12:09.000Z",
-      "ultima_conversa": "2026-05-01T00:34:40.000Z",
+      "ultima_conversa": "2026-05-28T00:16:30.000Z",
       "frequencia_interacao": "muito_baixa",
       "topicos_recentes": []
     },
@@ -30,12 +30,13 @@
       "horarios_ativos": {
         "11": 1,
         "16": 2,
-        "21": 1
+        "21": 2
       },
       "dias_semana_ativos": {
         "sexta-feira": 2,
         "domingo": 1,
-        "quinta-feira": 1
+        "quinta-feira": 1,
+        "quarta-feira": 1
       },
       "humor_comum": "neutro",
       "tipo_mensagens": {
@@ -69,7 +70,7 @@
         "relevancia": "alta"
       }
     ],
-    "ultima_atualizacao": "2026-05-01T00:34:50.000Z"
+    "ultima_atualizacao": "2026-05-28T00:16:30.000Z"
   },
   "278696501993618@lid_ia": {
     "userId": "278696501993618@lid_ia",
@@ -187,5 +188,57 @@
       }
     ],
     "ultima_atualizacao": "2026-04-27T02:53:05.000Z"
+  },
+  "239329066659887@lid_nazuna": {
+    "userId": "239329066659887@lid_nazuna",
+    "nome": "tavares",
+    "apelidos": [],
+    "preferencias": {
+      "assuntos_favoritos": [],
+      "gostos": [],
+      "nao_gostos": [],
+      "hobbies": [],
+      "estilo_conversa": "casual",
+      "usa_emojis": true,
+      "formal": false
+    },
+    "informacoes_pessoais": {
+      "idade": null,
+      "localizacao": null,
+      "profissao": null,
+      "relacionamento": null,
+      "familia": []
+    },
+    "historico_conversa": {
+      "total_mensagens": 2,
+      "primeira_conversa": "2026-05-28T00:18:28.000Z",
+      "ultima_conversa": "2026-05-28T00:19:18.000Z",
+      "frequencia_interacao": "baixa",
+      "topicos_recentes": []
+    },
+    "padroes_comportamento": {
+      "horarios_ativos": {
+        "21": 2
+      },
+      "dias_semana_ativos": {
+        "quarta-feira": 2
+      },
+      "humor_comum": "neutro",
+      "tipo_mensagens": {
+        "perguntas": 0,
+        "afirmacoes": 0,
+        "emocoes": 0,
+        "comandos": 0
+      }
+    },
+    "relacionamento_nazuna": {
+      "nivel_intimidade": 1,
+      "apelido_nazuna": null,
+      "memorias_especiais": [],
+      "conversas_marcantes": [],
+      "sentimento": "neutro"
+    },
+    "notas_importantes": [],
+    "ultima_atualizacao": "2026-05-28T00:19:18.000Z"
   }
 }

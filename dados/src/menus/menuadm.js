@@ -20,7 +20,9 @@ export default async function menuadm(prefix, botName = "MeuBot", userName = "Us
 ${menuTopBorder}${separatorIcon} *${adminMenuTitle}*
 ${middleBorder}
 ${middleBorder}${menuItemIcon}${prefix}ban
+${middleBorder}${menuItemIcon}${prefix}roletaban
 ${middleBorder}${menuItemIcon}${prefix}ban2
+${middleBorder}${menuItemIcon}${prefix}enquete
 ${middleBorder}${menuItemIcon}${prefix}bam (ban fake)
 ${middleBorder}${menuItemIcon}${prefix}setbammsg
 ${middleBorder}${menuItemIcon}${prefix}promover
@@ -164,6 +166,7 @@ ${middleBorder}${menuItemIcon}${prefix}modoparceria
 ${middleBorder}${menuItemIcon}${prefix}modorpg
 ${middleBorder}${menuItemIcon}${prefix}modolite
 ${middleBorder}${menuItemIcon}${prefix}bemvindo
+${middleBorder}${menuItemIcon}${prefix}bemvindo2
 ${middleBorder}${menuItemIcon}${prefix}saida
 ${middleBorder}${menuItemIcon}${prefix}autosticker
 ${middleBorder}${menuItemIcon}${prefix}soadm

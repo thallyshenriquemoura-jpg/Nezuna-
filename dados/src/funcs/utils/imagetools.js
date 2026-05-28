@@ -1,82 +1,195 @@
-/**
- * Image Tools - Remoção de fundo e Upscale
- * Usa API vreden.my.id
- */
+import https from 'https';
+import fs from 'fs';
+import verificarAPI from '../API.js';
 
-import axios from 'axios';
+const CONFIG_FILE = JSON.parse(
+  fs.readFileSync(new URL('../../config.json', import.meta.url), 'utf8')
+);
 
-const API_BASE = 'https://api.vreden.my.id/api/v1/artificial/imglarger';
+const cache = new Map();
+const CACHE_TTL = 30 * 60 * 1000;
 
-/**
- * Remover fundo de uma imagem
- * @param {string} url - URL da imagem
- * @returns {Promise<Object>} Resultado com URL da imagem sem fundo
- */
+function getCached(key) {
+  const item = cache.get(key);
+
+  if (!item) return null;
+
+  if (Date.now() - item.ts > CACHE_TTL) {
+    cache.delete(key);
+    return null;
+  }
+
+  return item.val;
+}
+
+function setCache(key, val) {
+  if (cache.size >= 1000) {
+    const oldestKey = cache.keys().next().value;
+    cache.delete(oldestKey);
+  }
+
+  cache.set(key, {
+    val,
+    ts: Date.now()
+  });
+}
+
+
+
 async function removeBg(url) {
+
+  const checkAPI = await verificarAPI();
+
+  if (checkAPI !== true) {
+    return {
+      ok: false,
+      msg: checkAPI
+    };
+  }
+
   try {
+
     if (!url || typeof url !== 'string') {
-      return { ok: false, msg: 'URL da imagem é obrigatória' };
+      return {
+        ok: false,
+        msg: 'URL da imagem é obrigatória'
+      };
     }
 
-    console.log('[RemoveBG] Processando imagem...');
+    const cached = getCached(`removebg:${url}`);
 
-    const response = await axios.get(`${API_BASE}/removebg`, {
-      params: { url },
-      timeout: 120000
-    });
-
-    if (!response.data?.result?.download) {
-      return { ok: false, msg: 'Não foi possível remover o fundo da imagem' };
+    if (cached) {
+      return {
+        ok: true,
+        ...cached,
+        cached: true
+      };
     }
+
+    const { apikey_vex, site_vex } = CONFIG_FILE;
+
+    const download =
+      `${site_vex}/api/ferramentas/removebg?apikey=${apikey_vex}&query=${encodeURIComponent(url)}`;
+
+    console.log('[RemoveBG] URL:', download);
+
+    const response = await fetch(download);
+
+    console.log('[RemoveBG] Status:', response.status);
+    console.log('[RemoveBG] Headers:', Object.fromEntries(response.headers.entries()));
+
+    const buffer = await response.arrayBuffer();
+
+    console.log('[RemoveBG] Tamanho:', buffer.byteLength);
+
+    if (!buffer || buffer.byteLength < 1000) {
+
+      const text = Buffer.from(buffer).toString();
+
+      console.log('[RemoveBG] Resposta:', text);
+
+      return {
+        ok: false,
+        msg: 'A API não retornou uma imagem válida.'
+      };
+
+    }
+
+    const result = {
+      status: true,
+      criador: 'Tokyo',
+      type: 'image',
+      mime: 'image/png',
+      download
+    };
+
+    setCache(`removebg:${url}`, result);
 
     return {
       ok: true,
-      status: true,
-      result: {
-        download: response.data.result.download
-      }
+      ...result
     };
+
   } catch (error) {
-    console.error('[RemoveBG] Erro:', error.message);
-    return { ok: false, msg: error.message || 'Erro ao remover fundo da imagem' };
+
+    console.log('[RemoveBG] Erro:', error);
+
+    return {
+      ok: false,
+      msg: error.message || 'Erro ao remover fundo da imagem'
+    };
+
   }
+
 }
 
-/**
- * Melhorar qualidade de uma imagem (upscale)
- * @param {string} url - URL da imagem
- * @param {number} scale - Escala de aumento (2 ou 4)
- * @returns {Promise<Object>} Resultado com URL da imagem melhorada
- */
+
+
+
 async function upscale(url, scale = 2) {
+
+  const checkAPI = await verificarAPI();
+
+  if (checkAPI !== true) {
+    throw new Error(checkAPI);
+  }
+
   try {
+
     if (!url || typeof url !== 'string') {
-      return { ok: false, msg: 'URL da imagem é obrigatória' };
+      return {
+        ok: false,
+        msg: 'URL da imagem é obrigatória'
+      };
     }
 
-    console.log(`[Upscale] Processando imagem (${scale}x)...`);
+    const cached = getCached(`upscale:${url}:${scale}`);
 
-    const response = await axios.get(`${API_BASE}/upscale`, {
-      params: { url, scale },
-      timeout: 120000
-    });
-
-    if (!response.data?.result?.download) {
-      return { ok: false, msg: 'Não foi possível melhorar a imagem' };
+    if (cached) {
+      return {
+        ok: true,
+        ...cached,
+        cached: true
+      };
     }
+
+    const { apikey_vex, site_vex } = CONFIG_FILE;
+
+    const download =
+      `${site_vex}/api/ferramentas/upscale?apikey=${apikey_vex}&query=${encodeURIComponent(url)}&scale=${scale}`;
+
+    const result = {
+      status: true,
+      criador: 'Tokyo',
+      type: 'image',
+      mime: 'image/png',
+      scale,
+      download
+    };
+
+    setCache(`upscale:${url}:${scale}`, result);
 
     return {
       ok: true,
-      status: true,
-      result: {
-        download: response.data.result.download
-      }
+      ...result
     };
+
   } catch (error) {
-    console.error('[Upscale] Erro:', error.message);
-    return { ok: false, msg: error.message || 'Erro ao melhorar imagem' };
+
+    throw new Error(
+      error.message || 'Erro ao melhorar imagem'
+    );
+
   }
+
 }
 
-export default { removeBg, upscale };
-export { removeBg, upscale };
+export default {
+  removeBg,
+  upscale
+};
+
+export {
+  removeBg,
+  upscale
+};

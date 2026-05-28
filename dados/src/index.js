@@ -5223,6 +5223,26 @@ Entre em contato com o dono do bot:
       }
     }
 
+
+// ==================== VERIFICAÇÃO DE COMANDOS PARA SUBDONOS ====================
+if (isCmd && command && !isOwner) {
+  try {
+    const subOwnerFile = pathz.join(DATABASE_DIR, 'subOwnerCommands.json');
+    let subOwnerCommands = [];
+    if (fs.existsSync(subOwnerFile)) {
+      subOwnerCommands = JSON.parse(fs.readFileSync(subOwnerFile, 'utf-8'));
+    }
+    if (subOwnerCommands.includes(command)) {
+      if (!isSubOwner) {
+        return reply('🚫 Apenas donos e subdonos podem usar este comando!');
+      }
+    }
+  } catch (e) {
+    console.error('Erro ao verificar lista de comandos de subdonos:', e);
+  }
+}
+
+
     switch (command) {
 
       case 'roles':
@@ -10910,7 +10930,7 @@ Entre em contato com o dono do bot:
       case 'rpgadd':
       case 'rpgaddmoney':
       case 'adicionardinheiro': {
-        if (!isOwnerOrSub) return reply('🚫 Apenas donos e subdonos podem usar este comando!');
+        
 
         const target = (menc_jid2 && menc_jid2[0]) || null;
         if (!target) return reply(`❌ Marque um usuário!\n\n💡 Uso: ${prefix}rpgadd @user <valor>`);
@@ -10931,7 +10951,7 @@ Entre em contato com o dono do bot:
       case 'rpgremove':
       case 'rpgremovemoney':
       case 'removerdinheiro': {
-        if (!isOwnerOrSub) return reply('🚫 Apenas donos e subdonos podem usar este comando!');
+        
 
         const target = (menc_jid2 && menc_jid2[0]) || null;
         if (!target) return reply(`❌ Marque um usuário!\n\n💡 Uso: ${prefix}rpgremove @user <valor>`);
@@ -10953,7 +10973,7 @@ Entre em contato com o dono do bot:
       case 'rpgsetlevel':
       case 'setlevel':
       case 'definirnivelrpg': {
-        if (!isOwnerOrSub) return reply('🚫 Apenas donos e subdonos podem usar este comando!');
+        
 
         const target = (menc_jid2 && menc_jid2[0]) || null;
         if (!target) return reply(`❌ Marque um usuário!\n\n💡 Uso: ${prefix}rpgsetlevel @user <nivel>`);
@@ -10974,7 +10994,7 @@ Entre em contato com o dono do bot:
       // Adicionar item ao jogador
       case 'rpgadditem':
       case 'adicionaritem': {
-        if (!isOwnerOrSub) return reply('🚫 Apenas donos e subdonos podem usar este comando!');
+        
 
         const target = (menc_jid2 && menc_jid2[0]) || null;
         if (!target) return reply(`❌ Marque um usuário!\n\n💡 Uso: ${prefix}rpgadditem @user <item> <quantidade>`);
@@ -10997,7 +11017,7 @@ Entre em contato com o dono do bot:
       // Remover item do jogador
       case 'rpgremoveitem':
       case 'removeritem': {
-        if (!isOwnerOrSub) return reply('🚫 Apenas donos e subdonos podem usar este comando!');
+        
 
         const target = (menc_jid2 && menc_jid2[0]) || null;
         if (!target) return reply(`❌ Marque um usuário!\n\n💡 Uso: ${prefix}rpgremoveitem @user <item> <quantidade>`);
@@ -11020,7 +11040,7 @@ Entre em contato com o dono do bot:
       // Reset total do jogador
       case 'rpgresetplayer':
       case 'resetarjogador': {
-        if (!isOwnerOrSub) return reply('🚫 Apenas donos e subdonos podem usar este comando!');
+        
 
         const target = (menc_jid2 && menc_jid2[0]) || null;
         if (!target) return reply(`❌ Marque um usuário!\n\n💡 Uso: ${prefix}rpgresetplayer @user`);
@@ -11057,7 +11077,7 @@ Entre em contato com o dono do bot:
       case 'rpgstats':
       case 'rpgstatistics':
       case 'estatisticasrpg': {
-        if (!isOwnerOrSub) return reply('🚫 Apenas donos e subdonos podem usar este comando!');
+        
 
         const econ = loadEconomy();
         const allUsers = Object.entries(econ.users || {});
@@ -20040,46 +20060,95 @@ Se não definir cores, a API usa padrão automaticamente.`
         }
         break;
 
+case 'zipbot':
+case 'zip-bot':
+case 'botzip':
+case 'bot-zip':
+case 'downloadbot':
+case 'download-bot':
+  try {
 
+    await reply(
+      '📦 Baixando o código-fonte do bot... Aguarde!'
+    );
 
+    let githubUrl = config.github_ofc;
 
-      case 'zipbot':
-      case 'zip-bot':
-      case 'botzip':
-      case 'bot-zip':
-      case 'downloadbot':
-      case 'download-bot':
-        try {
-          await reply('📦 Baixando o código-fonte do bot... Aguarde!');
+    if (githubUrl.endsWith('.git')) {
+      githubUrl = githubUrl.replace('.git', '');
+    }
 
-          const zipResponse = await axios.get(config.github_ofc, {
-            responseType: 'arraybuffer',
-            timeout: 60000 // 60 segundos de timeout
-          });
+    if (!githubUrl.includes('/archive/refs/heads/')) {
+      githubUrl += '/archive/refs/heads/main.zip';
+    }
 
-          if (!zipResponse.data) {
-            throw new Error('Resposta vazia do servidor GitHub');
-          }
+    console.log('[ZIPBOT] URL:', githubUrl);
 
-          await nazu.sendMessage(from, {
-            document: Buffer.from(zipResponse.data),
-            fileName: 'nazuna-bot.zip',
-            mimetype: 'application/zip',
-            caption: `📦 *Código-fonte do ${nomebot}*\n\n📖 Leia a documentação no repositório para entender melhor como instalar:\n🔗 ${config.github_ofc}\n\n⚠️ *Importante:* Certifique-se de ter Node.js instalado e siga os passos do README.md!`
-          }, { quoted: info });
-
-        } catch (e) {
-          console.error('Erro ao baixar zip do bot:', e);
-          const errorMsg = e.response?.status === 404
-            ? '❌ Repositório não encontrado.'
-            : e.code === 'ECONNABORTED' || e.code === 'ETIMEDOUT'
-              ? '❌ Tempo de conexão esgotado. Tente novamente.'
-              : '❌ Erro ao baixar o arquivo.';
-
-          await reply(`${errorMsg}\n\nTente acessar diretamente:\n🔗 ${config.github_ofc}`);
+    const zipResponse = await axios.get(
+      githubUrl,
+      {
+        responseType: 'arraybuffer',
+        timeout: 60000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0'
         }
-        break;
-      case 'gitbot':
+      }
+    );
+
+    const zipBuffer = Buffer.from(zipResponse.data);
+
+    console.log(
+      '[ZIPBOT] Tamanho:',
+      zipBuffer.length
+    );
+
+    if (!zipBuffer || zipBuffer.length < 1000) {
+      throw new Error(
+        'Arquivo ZIP inválido ou vazio.'
+      );
+    }
+
+    await nazu.sendMessage(
+      from,
+      {
+        document: zipBuffer,
+        fileName: 'nazuna-bot.zip',
+        mimetype: 'application/zip',
+        caption:
+          `📦 *Código-fonte do ${nomebot}*\n\n` +
+          `📖 Leia a documentação no repositório para entender melhor como instalar:\n` +
+          `🔗 ${config.github_ofc}\n\n` +
+          `⚠️ *Importante:* Certifique-se de ter Node.js instalado e siga os passos do README.md!`
+      },
+      {
+        quoted: info
+      }
+    );
+
+  } catch (e) {
+
+    console.error(
+      'Erro ao baixar zip do bot:',
+      e
+    );
+
+    const errorMsg =
+      e.response?.status === 404
+        ? '❌ Repositório não encontrado.'
+        : e.code === 'ECONNABORTED' ||
+          e.code === 'ETIMEDOUT'
+          ? '❌ Tempo de conexão esgotado. Tente novamente.'
+          : '❌ Erro ao baixar o arquivo.';
+
+    await reply(
+      `${errorMsg}\n\nTente acessar diretamente:\n🔗 ${config.github_ofc}`
+    );
+
+  }
+break;
+
+
+        case 'gitbot':
       case 'git-bot':
       case 'github':
       case 'git-hub':
@@ -21723,6 +21792,119 @@ Precisa de ajuda? Entre em contato:
           await reply("❌ Ocorreu um erro interno. Tente novamente em alguns minutos.");
         }
         break;
+        
+        
+case 'addcmd-subdono':
+  if (!isOwner) return reply("Este comando é apenas para o meu dono");
+
+  try {
+    const cmdToAdd = q?.toLowerCase().trim();
+
+    if (!cmdToAdd) {
+      return reply(
+        '❌ Informe o comando a adicionar!\nEx.: ' +
+        prefix + 'addcmd-subdono play'
+      );
+    }
+
+    const subOwnerFile = pathz.join(DATABASE_DIR, 'subOwnerCommands.json');
+
+    let subOwnerCommands = [];
+
+    if (fs.existsSync(subOwnerFile)) {
+      subOwnerCommands = JSON.parse(fs.readFileSync(subOwnerFile));
+    }
+
+    if (subOwnerCommands.includes(cmdToAdd)) {
+      return reply(`❌ O comando *${cmdToAdd}* já está liberado para subdonos!`);
+    }
+
+    subOwnerCommands.push(cmdToAdd);
+
+    fs.writeFileSync(
+      subOwnerFile,
+      JSON.stringify(subOwnerCommands, null, 2)
+    );
+
+    await reply(`✅ Comando *${cmdToAdd}* adicionado para subdonos!`);
+  } catch (e) {
+    console.error(e);
+    await reply("❌ Ocorreu um erro interno. Tente novamente em alguns minutos.");
+  }
+  break;
+  
+  
+  case 'removecmd-subdono':
+  if (!isOwner) return reply("Este comando é apenas para o meu dono");
+
+  try {
+    const cmdToRemove = q?.toLowerCase().trim();
+
+    if (!cmdToRemove) {
+      return reply(
+        '❌ Informe o comando a remover!\nEx.: ' +
+        prefix + 'removecmd-subdono play'
+      );
+    }
+
+    const subOwnerFile = pathz.join(DATABASE_DIR, 'subOwnerCommands.json');
+
+    let subOwnerCommands = [];
+
+    if (fs.existsSync(subOwnerFile)) {
+      subOwnerCommands = JSON.parse(fs.readFileSync(subOwnerFile));
+    }
+
+    if (!subOwnerCommands.includes(cmdToRemove)) {
+      return reply(`❌ O comando *${cmdToRemove}* não está liberado!`);
+    }
+
+    subOwnerCommands = subOwnerCommands.filter(
+      cmd => cmd !== cmdToRemove
+    );
+
+    fs.writeFileSync(
+      subOwnerFile,
+      JSON.stringify(subOwnerCommands, null, 2)
+    );
+
+    await reply(`✅ Comando *${cmdToRemove}* removido dos subdonos!`);
+  } catch (e) {
+    console.error(e);
+    await reply("❌ Ocorreu um erro interno. Tente novamente em alguns minutos.");
+  }
+  break;
+  
+  
+  case 'listcmd-subdono':
+  if (!isOwner) return reply("Este comando é apenas para o meu dono");
+
+  try {
+    const subOwnerFile = pathz.join(DATABASE_DIR, 'subOwnerCommands.json');
+
+    let subOwnerCommands = [];
+
+    if (fs.existsSync(subOwnerFile)) {
+      subOwnerCommands = JSON.parse(fs.readFileSync(subOwnerFile));
+    }
+
+    if (!subOwnerCommands.length) {
+      return reply('❌ Nenhum comando liberado para subdonos.');
+    }
+
+    let txt = `📜 *Comandos liberados para subdonos:*\n\n`;
+
+    txt += subOwnerCommands
+      .map((cmd, i) => `${i + 1}. ${prefix}${cmd}`)
+      .join('\n');
+
+    await reply(txt);
+
+  } catch (e) {
+    console.error(e);
+    await reply("❌ Ocorreu um erro interno. Tente novamente em alguns minutos.");
+  }
+  break;
       case 'blockuserg':
         if (!isOwner) return reply("Este comando é apenas para o meu dono");
         try {
@@ -21832,6 +22014,53 @@ Precisa de ajuda? Entre em contato:
         }
         break;
 
+
+case 'nomedono':
+
+  try {
+
+    if (!isOwner) {
+      return reply("Este comando é exclusivo para o meu dono!");
+    }
+
+    if (!q) {
+      return reply(
+        `⚙️ *Configuração do Nome do Dono*\n\n` +
+        `📝 *Como usar:*\n` +
+        `• Digite o novo nome após o comando\n` +
+        `• Ex: ${prefix}${command} Tokyo\n` +
+        `• Ex: ${prefix}${command} Vex Tech Solutions\n\n` +
+        `✅ O nome do dono será atualizado!`
+      );
+    }
+
+    const novoNome = q.trim();
+
+    let config = JSON.parse(
+      fs.readFileSync(CONFIG_FILE)
+    );
+
+    config.nomedono = novoNome;
+
+    writeJsonFile(CONFIG_FILE, config);
+
+    await reply(
+      `✅ Nome do dono alterado com sucesso para:\n👑 ${novoNome}`
+    );
+
+  } catch (e) {
+
+    console.error(e);
+
+    await reply(
+      "🐝 Ops! Ocorreu um erro inesperado. Tente novamente em alguns instantes, por favor! 🥺"
+    );
+
+  }
+
+break;
+        
+        
       case 'lid':
       case 'meulid':
         if (isGroup) {
@@ -24583,53 +24812,102 @@ ${prefix}togglecmdvip premium_ia off`);
           await reply("❌ Ocorreu um erro interno. Tente novamente em alguns minutos.");
         }
         break;
-      case 'rmbg':
-      case 'sbg':
-      case 'sfundo':
-        try {
-          const imgMsg = quotedMessageContent?.imageMessage ||
-            quotedMessageContent?.viewOnceMessage?.message?.imageMessage ||
-            quotedMessageContent?.viewOnceMessageV2?.message?.imageMessage ||
-            info.message?.imageMessage ||
-            info.message?.viewOnceMessage?.message?.imageMessage ||
-            info.message?.viewOnceMessageV2?.message?.imageMessage;
 
-          if (!imgMsg) {
-            return reply(`❌ Marque uma imagem para remover o fundo.\n\n💡 Uso: ${prefix}${command}`);
-          }
 
-          reply('⏳ Removendo fundo, aguarde...');
 
-          const imageBuffer = await getFileBuffer(imgMsg, 'image');
-          const imageUrl = await upload(imageBuffer, true);
+case 'removebg':
+case 'rmbg':
+case 'sbg':
+case 'sfundo':
+  try {
 
-          if (!imageUrl) throw new Error('Falha ao fazer upload da imagem.');
+    const imgMsg = quotedMessageContent?.imageMessage ||
+      quotedMessageContent?.viewOnceMessage?.message?.imageMessage ||
+      quotedMessageContent?.viewOnceMessageV2?.message?.imageMessage ||
+      info.message?.imageMessage ||
+      info.message?.viewOnceMessage?.message?.imageMessage ||
+      info.message?.viewOnceMessageV2?.message?.imageMessage;
 
-          const bgResult = await removeBg(imageUrl);
+    if (!imgMsg) {
+      return reply(
+        `❌ Marque uma imagem para remover o fundo.\n\n💡 Uso: ${prefix}${command}`
+      );
+    }
 
-          if (!bgResult.ok) {
-            throw new Error(bgResult.msg || 'Não foi possível remover o fundo da imagem.');
-          }
+    reply('⏳ Removendo fundo, aguarde...');
 
-          const resultUrl = bgResult.result?.download;
+    const imageBuffer = await getFileBuffer(imgMsg, 'image');
+    const imageUrl = await upload(imageBuffer, true);
 
-          if (command === 'sbg' || command === 'sfundo') {
-            return sendSticker(nazu, from, {
-              sticker: { url: resultUrl },
-              author: `${pushname}\n${nomebot}\n${nomedono}`,
-              packname: 'Nazuna Bot - Stickers',
-              type: 'image'
-            }, {
-              quoted: info
-            });
-          }
+    if (!imageUrl) {
+      throw new Error('Falha ao fazer upload da imagem.');
+    }
 
-          return nazu.sendMessage(from, { image: { url: resultUrl } }, { quoted: info });
-        } catch (e) {
-          console.error(e);
-          return reply('❌ Ocorreu um erro interno. Tente novamente em alguns minutos.');
+    const bgResult = await removeBg(imageUrl);
+
+    if (!bgResult.ok) {
+      return reply(
+        bgResult.msg || '❌ Não foi possível remover o fundo da imagem.'
+      );
+    }
+
+    const resultUrl = bgResult.download;
+
+    if (!resultUrl) {
+      return reply('❌ A API não retornou nenhuma imagem.');
+    }
+
+    if (command === 'sbg' || command === 'sfundo') {
+
+      const response = await fetch(resultUrl);
+
+      if (!response.ok) {
+        throw new Error('Falha ao baixar imagem processada.');
+      }
+
+      const buffer = Buffer.from(
+        await response.arrayBuffer()
+      );
+
+      return sendSticker(
+        nazu,
+        from,
+        {
+          sticker: buffer,
+          author: `${pushname}\n${nomebot}\n${nomedono}`,
+          packname: 'Nazuna Bot - Stickers',
+          type: 'image'
+        },
+        {
+          quoted: info
         }
-        break;
+      );
+
+    }
+
+    return nazu.sendMessage(
+      from,
+      {
+        image: {
+          url: resultUrl
+        }
+      },
+      {
+        quoted: info
+      }
+    );
+
+  } catch (e) {
+
+    console.error(e);
+
+    return reply(
+      e.message || '❌ Ocorreu um erro interno. Tente novamente em alguns minutos.'
+    );
+
+  }
+break;
+
       case 'upscale':
         try {
           const upscaleImgMsg = quotedMessageContent?.imageMessage ||
@@ -25215,6 +25493,69 @@ packname: `${nomebot}`,            type: isVideo2 ? 'video' : 'image'
           await reply("❌ Ocorreu um erro interno. Tente novamente em alguns minutos.");
         }
         break;
+        
+        
+        case 'enquete':
+case 'poll':
+  try {
+
+    if (!isGroup) {
+      return reply("❌ Este comando só pode ser usado em grupos.");
+    }
+
+    if (!isGroupAdmin) {
+      return reply("Comando restrito a Administradores ou Moderadores com permissão. 💔");
+    }
+
+    if (!q) {
+      return reply(
+        `❌ Use corretamente:\n\n` +
+        `💡 Exemplo:\n` +
+        `${prefix + command} Pergunta | Opção 1 | Opção 2\n\n` +
+        `📌 Você pode adicionar várias opções separando com |`
+      );
+    }
+
+    const partes = q
+      .split('|')
+      .map(v => v.trim())
+      .filter(Boolean);
+
+    if (partes.length < 3) {
+      return reply(
+        `❌ Você precisa informar:\n` +
+        `• Pergunta\n` +
+        `• Pelo menos 2 opções`
+      );
+    }
+
+    const pergunta = partes[0];
+    const opcoes = partes.slice(1);
+
+    await nazu.sendMessage(
+      from,
+      {
+        poll: {
+          name: pergunta,
+          values: opcoes,
+          selectableCount: 1
+        }
+      },
+      {
+        quoted: info
+      }
+    );
+
+  } catch (e) {
+
+    console.error('Erro no comando enquete:', e);
+
+    return reply(
+      '❌ Ocorreu um erro ao criar a enquete.'
+    );
+
+  }
+break;
       case 'listblocksgp':
       case 'blocklist':
         if (!isGroup) return reply("isso so pode ser usado em grupo 💔");
@@ -26425,6 +26766,75 @@ A mensagem será enviada todos os dias às ${normalizedTime} (horário de São P
           await reply("❌ Ocorreu um erro interno. Tente novamente em alguns minutos.");
         }
         break;
+        
+        case 'roletaban':
+  try {
+
+    if (!isGroup) {
+      return reply("❌ Este comando só pode ser usado em grupos.");
+    }
+
+    if (!isGroupAdmin) {
+      return reply("Comando restrito a Administradores ou Moderadores com permissão. 💔");
+    }
+
+    if (!isBotAdmin) {
+      return reply("Eu preciso ser adm 💔");
+    }
+
+    let path = pathz.join(GRUPOS_DIR, `${from}.json`);
+
+    let data = await optimizer.loadJsonWithCache(
+      path,
+      { mark: {} }
+    );
+
+    let membros = AllgroupMembers.filter(
+      m =>
+        !['0', 'marca'].includes(data.mark[m]) &&
+        m !== botNumber &&
+        !groupAdmins.includes(m)
+    );
+
+    if (membros.length < 1) {
+      return reply(
+        '❌ Não há membros válidos para remover.'
+      );
+    }
+
+    const indice = Math.floor(
+      Math.random() * membros.length
+    );
+
+    const sorteado = membros[indice];
+
+    await reply(
+      `🎲 @${getUserName(sorteado)} você foi selecionado aleatoriamente para ser removido do grupo.`,
+      {
+        mentions: [sorteado]
+      }
+    );
+
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
+    await nazu.groupParticipantsUpdate(
+      from,
+      [sorteado],
+      'remove'
+    );
+
+  } catch (e) {
+
+    console.error('Erro no comando roletaban:', e);
+
+    await reply(
+      "❌ Ocorreu um erro interno. Tente novamente em alguns minutos."
+    );
+
+  }
+
+break;
+        
       case 'totag':
       case 'cita':
       case 'hidetag':
@@ -27223,6 +27633,33 @@ Exemplos:
           await reply("❌ Ocorreu um erro interno. Tente novamente em alguns minutos.");
         }
         break;
+        
+        
+case 'bemvindo2':        
+       case 'welcome2':
+        try {
+          if (!isGroup) return reply("isso so pode ser usado em grupo 💔");
+          if (!isGroupAdmin) return reply("você precisa ser adm 💔");
+          const groupFilePath = buildGroupFilePath(from);
+          if (!groupData.bemvindo2 || groupData.bemvindo2 === undefined) {
+
+            groupData.bemvindo2 = true;
+          } else {
+
+            groupData.bemvindo2 = !groupData.bemvindo2;
+          }
+          writeJsonFile(groupFilePath, groupData);
+          if (groupData.bemvindo2) {
+            await reply(`✅ *Boas-vindas ativadas!* Agora, novos membros serão recebidos com uma mensagem personalizada.\n📝 Para configurar a mensagem, use: *${prefixo}legendabv2*\n*Esse bem vindo não tem foto!*`);
+          } else {
+            await reply('⚠️ *Boas-vindas desativadas!* O grupo não enviará mais mensagens para novos membros.\n*Esse bem vindo não tem foto!*');
+          }
+        } catch (e) {
+          console.error(e);
+          await reply("❌ Ocorreu um erro interno. Tente novamente em alguns minutos.");
+        }
+        break;
+        
       case 'banghost':  //corrigido por kauan revil
         try {
           if (!isGroup) return reply("❌ Só pode ser usado em grupos.");
@@ -27391,7 +27828,7 @@ Exemplos:
 
 
 
-
+case 'set-bannerbv':
       case 'set-bannnerbv': {
         if (!isGroup) return reply("isso só pode ser usado em grupo 💔");
         if (!isGroupAdmin) return reply("você precisa ser adm 💔");
@@ -28468,6 +28905,27 @@ case 'assistent':
           await reply("❌ Ocorreu um erro interno. Tente novamente em alguns minutos.");
         }
         break;
+        
+        
+        
+       case 'legendabv2':
+      case 'textbv2':
+      case 'welcomemsg2':
+        try {
+          if (!isGroup) return reply("isso so pode ser usado em grupo 💔");
+          if (!isGroupAdmin) return reply("você precisa ser adm 💔");
+          const groupFilePath = __dirname + `/../database/grupos/${from}.json`;
+          if (!q) return reply(`*Esse bem vindo não tem foto!*\n\n📝 *Configuração da Mensagem de Boas-Vindas*\n\nPara definir uma mensagem personalizada, digite o comando seguido do texto desejado. Você pode usar as seguintes variáveis:\n\n- *#numerodele#* → Marca o novo membro.\n- *#nomedogp#* → Nome do grupo.\n- *#desc#* → Descrição do grupo.\n- *#membros#* → Número total de membros no grupo.\n\n📌 *Exemplo:*\n${prefixo}legendabv2 Bem-vindo(a) #numerodele# ao grupo *#nomedogp#*! Agora somos #membros# membros. Leia a descrição: #desc#`);
+
+          groupData.textbv2 = q;
+          fs.writeFileSync(groupFilePath, JSON.stringify(groupData));
+          reply(`✅ *Mensagem de boas-vindas configurada com sucesso!*\n\n📌 Nova mensagem:\n"${groupData.textbv}"\n\n*Esse bem vindo não tem foto!*`);
+        } catch (e) {
+          console.error(e);
+          await reply("❌ Ocorreu um erro interno. Tente novamente em alguns minutos.");
+        }
+        break;
+        
       case 'mute':
       case 'mutar':
         try {
@@ -30379,32 +30837,99 @@ ${nivelSorte >= 70 ? '🎉 Hoje é seu dia de sorte!' : nivelSorte >= 40 ? '🤔
           await reply("Ocorreu um erro 💔");
         }
         break;
-      case 'eununca':
-        try {
-          if (!isGroup) return reply("isso so pode ser usado em grupo 💔");
-          if (!isModoBn) return reply('❌ O modo brincadeira não esta ativo nesse grupo');
 
-          const pollQuestion = toolsJson().iNever[Math.floor(Math.random() * toolsJson().iNever.length)];
 
-          await reply(`🔞 *EU NUNCA*\n\n${pollQuestion}\n\nResponda com: *Eu nunca* ou *Eu já*`);
-        } catch (e) {
-          console.error(e);
-          await reply("❌ Ocorreu um erro interno. Tente novamente em alguns minutos.");
+case 'eununca':
+  try {
+
+    if (!isGroup) {
+      return reply("isso so pode ser usado em grupo 💔");
+    }
+
+    if (!isModoBn) {
+      return reply('❌ O modo brincadeira não esta ativo nesse grupo');
+    }
+
+    const pergunta =
+      toolsJson().iNever[
+        Math.floor(
+          Math.random() * toolsJson().iNever.length
+        )
+      ];
+
+    await nazu.sendMessage(
+      from,
+      {
+        poll: {
+          name: `🔞 EU NUNCA\n\n${pergunta}`,
+          values: [
+            'Eu nunca',
+            'Eu já'
+          ],
+          selectableCount: 1
         }
-        break;
-      case 'vab':
-        try {
-          if (!isGroup) return reply("isso so pode ser usado em grupo 💔");
-          if (!isModoBn) return reply('❌ O modo brincadeira não esta ativo nesse grupo');
+      },
+      {
+        quoted: info
+      }
+    );
 
-          const vabs = vabJson()[Math.floor(Math.random() * vabJson().length)];
+  } catch (e) {
 
-          await reply(`🤔 *O QUE VOCÊ PREFERE?*\n\n1️⃣ ${vabs.option1}\n2️⃣ ${vabs.option2}`);
-        } catch (e) {
-          console.error(e);
-          await reply("❌ Ocorreu um erro interno. Tente novamente em alguns minutos.");
+    console.error(e);
+
+    await reply(
+      "❌ Ocorreu um erro interno. Tente novamente em alguns minutos."
+    );
+
+  }
+break;
+
+case 'vab':
+  try {
+
+    if (!isGroup) {
+      return reply("isso so pode ser usado em grupo 💔");
+    }
+
+    if (!isModoBn) {
+      return reply('❌ O modo brincadeira não esta ativo nesse grupo');
+    }
+
+    const vabs =
+      vabJson()[
+        Math.floor(
+          Math.random() * vabJson().length
+        )
+      ];
+
+    await nazu.sendMessage(
+      from,
+      {
+        poll: {
+          name: '🤔 O QUE VOCÊ PREFERE?',
+          values: [
+            vabs.option1,
+            vabs.option2
+          ],
+          selectableCount: 1
         }
-        break;
+      },
+      {
+        quoted: info
+      }
+    );
+
+  } catch (e) {
+
+    console.error(e);
+
+    await reply(
+      "❌ Ocorreu um erro interno. Tente novamente em alguns minutos."
+    );
+
+  }
+break;
       case 'conselho':
         try {
           const conselhos = toolsJson().Conselhos;
