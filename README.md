@@ -2,7 +2,7 @@
   <img 
     src="https://raw.githubusercontent.com/DevTokyoVx/nazuna/main/dados/midias/menu.jpg"
     width="500"
-    height="500"
+    height="420"
     style="border-radius: 50%; object-fit: cover;"
   />
 </p>
@@ -186,49 +186,50 @@ Você pode abrir Pull Requests, Issues ou sugerir melhorias no repositório ofic
 
 
 ---
+# ⚙️ Instalação no Termux
 
-# ⚙️ Instalação no termux 
+<details>
+  <summary><strong>📱 Clique aqui para ver o passo a passo de instalação</strong></summary>
 
-## 📱Passo a passo para instalar a nazuna bot no termux
+<br>
 
-### 1️⃣ Entre na pasta sdcard (é melhor caso você queira editar o bot)
+### 1️⃣ Entre na pasta `/sdcard`
+> Recomendado caso queira editar os arquivos do bot facilmente.
 
 ```bash
 cd /sdcard
 
 ---
 
-2️⃣ Clone o repositório oficial 
+2️⃣ Clone o repositório oficial da Nazuna
 
 git clone https://github.com/DevTokyoVx/nazuna
 
 ---
 
-3️⃣ Entre na pasta da nazuna bot
+3️⃣ Entre na pasta do projeto
 
 cd /sdcard/nazuna
 
 ---
 
-4️⃣ Inicie o bot (Vai baixar as dependências automaticamente)
+4️⃣ Inicie o bot
+
+«As dependências serão instaladas automaticamente na primeira execução.»
 
 npm start
 
 ---
 
-5️⃣ Escolha entre conectar via qr-code ou pairingCode 
+5️⃣ Escolha a forma de conexão
 
-01- qr-code
-02- pairingCode 
+01 - QR Code
+02 - Pairing Code
 
----
-
-
-<p align="center">
-  <sub>Pronto,você instalou a nazuna bot!</sub>
-</p>
+<br><p align="center">
+  <sub>✅ Pronto! A Nazuna Bot foi instalada com sucesso.</sub>
+</p></details>
 ```
-
 ---
 
 ## 👥 Contribuidores
