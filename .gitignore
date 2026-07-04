@@ -1,0 +1,6 @@
+node_modules
+dados/logs
+dados/database
+session
+auth_info_baileys
+*.log

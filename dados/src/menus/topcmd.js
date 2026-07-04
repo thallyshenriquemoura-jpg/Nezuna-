@@ -3,7 +3,7 @@ async function menuTopCmd(prefix, botName = "MeuBot", userName = "Usuário", top
     menuTopBorder = "╭┈",
     bottomBorder = "╰─┈┈┈┈┈◜❁◞┈┈┈┈┈─╯",
     menuTitleIcon = "🍧ฺꕸ▸",
-    menuItemIcon = "•.̇𖥨֗💜⭟",
+    menuItemIcon = "•.̇𖥨֗🎭⭟",
     separatorIcon = "❁",
     middleBorder = "┊",
     topCommandsMenuTitle = "MAIS USADOS",

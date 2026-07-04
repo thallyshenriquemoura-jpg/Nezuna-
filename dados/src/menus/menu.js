@@ -3,7 +3,7 @@ export default async function menu(prefix, botName = "MeuBot", userName = "Usuá
     menuTopBorder = "╭┈",
     bottomBorder = "╰─┈┈┈┈┈◜❁◞┈┈┈┈┈─╯",
     menuTitleIcon = "🍧ฺꕸ▸",
-    menuItemIcon = "•.̇𖥨֗💜⭟",
+    menuItemIcon = "•.̇𖥨֗🎭⭟",
     separatorIcon = "❁",
     middleBorder = "┊"
 } = {}) {
