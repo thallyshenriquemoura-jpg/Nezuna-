@@ -1,0 +1,35 @@
+{
+  "mark": {},
+  "createdAt": "2026-07-04T21:40:29.724Z",
+  "groupName": "👾•👨🏻‍⚖️'- Staff De Leilões -' 👨🏻‍⚖️•🎯",
+  "modorpg": false,
+  "minMessage": null,
+  "moderators": [],
+  "allowedModCommands": [],
+  "mutedUsers": {},
+  "mutedUsers2": {},
+  "levelingEnabled": false,
+  "adminWhitelist": {},
+  "roles": {},
+  "roleMessages": {},
+  "contador": [
+    {
+      "id": "208027412082774@lid",
+      "msg": 1,
+      "cmd": 0,
+      "figu": 0,
+      "pushname": "Vitinho",
+      "firstSeen": "2026-07-04T21:40:29.728Z",
+      "lastActivity": "2026-07-04T21:40:29.728Z"
+    },
+    {
+      "id": "69055138541616@lid",
+      "msg": 2,
+      "cmd": 0,
+      "figu": 0,
+      "pushname": "Lk",
+      "firstSeen": "2026-07-04T21:41:02.523Z",
+      "lastActivity": "2026-07-04T21:41:16.877Z"
+    }
+  ]
+}

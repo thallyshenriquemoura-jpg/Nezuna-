@@ -1,0 +1,35 @@
+{
+  "mark": {},
+  "createdAt": "2026-07-04T21:39:24.311Z",
+  "groupName": "🎯•⛩️'-Aldeia Dos Ninjas-'⛩️•👾",
+  "modorpg": false,
+  "minMessage": null,
+  "moderators": [],
+  "allowedModCommands": [],
+  "mutedUsers": {},
+  "mutedUsers2": {},
+  "levelingEnabled": false,
+  "adminWhitelist": {},
+  "roles": {},
+  "roleMessages": {},
+  "contador": [
+    {
+      "id": "199655900111060@lid",
+      "msg": 2,
+      "cmd": 0,
+      "figu": 0,
+      "pushname": "mateus",
+      "firstSeen": "2026-07-04T21:39:24.349Z",
+      "lastActivity": "2026-07-04T21:53:32.723Z"
+    },
+    {
+      "id": "69055138541616@lid",
+      "msg": 1,
+      "cmd": 0,
+      "figu": 0,
+      "pushname": "Lk",
+      "firstSeen": "2026-07-04T21:39:41.328Z",
+      "lastActivity": "2026-07-04T21:39:41.328Z"
+    }
+  ]
+}

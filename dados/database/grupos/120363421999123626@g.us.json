@@ -1,0 +1,53 @@
+{
+  "mark": {},
+  "createdAt": "2026-07-04T21:33:20.284Z",
+  "groupName": "👾•🎴'- Akatsuki -'🎴•🎯",
+  "modorpg": false,
+  "minMessage": null,
+  "moderators": [],
+  "allowedModCommands": [],
+  "mutedUsers": {},
+  "mutedUsers2": {},
+  "levelingEnabled": false,
+  "adminWhitelist": {},
+  "roles": {},
+  "roleMessages": {},
+  "contador": [
+    {
+      "id": "218528254816286@lid",
+      "msg": 10,
+      "cmd": 0,
+      "figu": 0,
+      "pushname": "GS",
+      "firstSeen": "2026-07-04T21:33:20.328Z",
+      "lastActivity": "2026-07-04T22:11:33.451Z"
+    },
+    {
+      "id": "69055138541616@lid",
+      "msg": 11,
+      "cmd": 0,
+      "figu": 5,
+      "pushname": "Lk",
+      "firstSeen": "2026-07-04T21:42:23.086Z",
+      "lastActivity": "2026-07-04T23:16:43.288Z"
+    },
+    {
+      "id": "39749989445713@lid",
+      "msg": 1,
+      "cmd": 0,
+      "figu": 0,
+      "pushname": "路易斯",
+      "firstSeen": "2026-07-04T23:16:23.537Z",
+      "lastActivity": "2026-07-04T23:16:23.537Z"
+    },
+    {
+      "id": "216617095057506@lid",
+      "msg": 2,
+      "cmd": 0,
+      "figu": 0,
+      "pushname": "Fleet",
+      "firstSeen": "2026-07-04T23:16:30.571Z",
+      "lastActivity": "2026-07-04T23:16:42.232Z"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "mark": {},
+  "createdAt": "2026-07-04T22:07:41.116Z",
+  "groupName": "👒⟮🇺🇳' QG Marinha '🇺🇳⟯👒",
+  "modorpg": false,
+  "minMessage": null,
+  "moderators": [],
+  "allowedModCommands": [],
+  "mutedUsers": {},
+  "mutedUsers2": {},
+  "levelingEnabled": false,
+  "adminWhitelist": {},
+  "roles": {},
+  "roleMessages": {},
+  "contador": [
+    {
+      "id": "66035826860284@lid",
+      "msg": 5,
+      "cmd": 0,
+      "figu": 1,
+      "pushname": "🌼Mai Maya🌼",
+      "firstSeen": "2026-07-04T22:07:41.135Z",
+      "lastActivity": "2026-07-04T23:16:42.129Z"
+    },
+    {
+      "id": "1323051253855@lid",
+      "msg": 3,
+      "cmd": 0,
+      "figu": 0,
+      "pushname": " ⃝꙰⃝꙰⃝꙰⃝꙰⃝꙰⃝꙰⃝꙰⃝꙰⃝꙰⃝Ren>-",
+      "firstSeen": "2026-07-04T23:16:25.206Z",
+      "lastActivity": "2026-07-04T23:16:39.085Z"
+    }
+  ]
+}

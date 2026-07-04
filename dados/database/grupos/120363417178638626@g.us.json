@@ -1,0 +1,53 @@
+{
+  "mark": {},
+  "createdAt": "2026-07-04T21:41:25.721Z",
+  "groupName": "˖𓍢ִ໋🗡️✧˚🌳༘˚Arena da Floresta˚༘🌳˚✧🩸˖𓍢ִ໋",
+  "modorpg": false,
+  "minMessage": null,
+  "moderators": [],
+  "allowedModCommands": [],
+  "mutedUsers": {},
+  "mutedUsers2": {},
+  "levelingEnabled": false,
+  "adminWhitelist": {},
+  "roles": {},
+  "roleMessages": {},
+  "contador": [
+    {
+      "id": "198144591663204@lid",
+      "msg": 13,
+      "cmd": 0,
+      "figu": 2,
+      "pushname": "𓆩༢࿔ྀુ𝙶𝙰𝙱𝚁𝙸𝙴𝙻℘⁖✭",
+      "firstSeen": "2026-07-04T21:41:25.727Z",
+      "lastActivity": "2026-07-04T23:16:39.174Z"
+    },
+    {
+      "id": "102324089417819@lid",
+      "msg": 12,
+      "cmd": 0,
+      "figu": 0,
+      "pushname": "「𖤓」⚡︎𝑺𝒂𝒕𝒐𝒓𝒐👑",
+      "firstSeen": "2026-07-04T21:43:28.474Z",
+      "lastActivity": "2026-07-04T23:16:35.272Z"
+    },
+    {
+      "id": "77795296321765@lid",
+      "msg": 1,
+      "cmd": 0,
+      "figu": 2,
+      "pushname": "Artur",
+      "firstSeen": "2026-07-04T22:11:12.023Z",
+      "lastActivity": "2026-07-04T23:16:40.583Z"
+    },
+    {
+      "id": "114903981539489@lid",
+      "msg": 1,
+      "cmd": 0,
+      "figu": 1,
+      "pushname": "Imperador👑",
+      "firstSeen": "2026-07-04T23:16:26.451Z",
+      "lastActivity": "2026-07-04T23:16:26.451Z"
+    }
+  ]
+}

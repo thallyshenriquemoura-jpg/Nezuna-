@@ -1,0 +1,35 @@
+{
+  "mark": {},
+  "createdAt": "2026-07-04T21:34:53.450Z",
+  "groupName": "👾•©️'- Capsule Corps -'💊•🎯",
+  "modorpg": false,
+  "minMessage": null,
+  "moderators": [],
+  "allowedModCommands": [],
+  "mutedUsers": {},
+  "mutedUsers2": {},
+  "levelingEnabled": false,
+  "adminWhitelist": {},
+  "roles": {},
+  "roleMessages": {},
+  "contador": [
+    {
+      "id": "218528254816286@lid",
+      "msg": 3,
+      "cmd": 0,
+      "figu": 0,
+      "pushname": "GS",
+      "firstSeen": "2026-07-04T21:34:53.455Z",
+      "lastActivity": "2026-07-04T21:38:03.551Z"
+    },
+    {
+      "id": "3144000004344@lid",
+      "msg": 1,
+      "cmd": 0,
+      "figu": 0,
+      "pushname": "Osmar Lee - Machan",
+      "firstSeen": "2026-07-04T21:36:21.136Z",
+      "lastActivity": "2026-07-04T21:36:21.136Z"
+    }
+  ]
+}

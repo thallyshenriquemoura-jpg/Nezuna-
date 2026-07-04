@@ -1,0 +1,62 @@
+{
+  "mark": {},
+  "createdAt": "2026-07-04T21:40:03.739Z",
+  "groupName": "Multiverso geek forever",
+  "modorpg": false,
+  "minMessage": null,
+  "moderators": [],
+  "allowedModCommands": [],
+  "mutedUsers": {},
+  "mutedUsers2": {},
+  "levelingEnabled": false,
+  "adminWhitelist": {},
+  "roles": {},
+  "roleMessages": {},
+  "contador": [
+    {
+      "id": "234991283904683@lid",
+      "msg": 3,
+      "cmd": 0,
+      "figu": 1,
+      "pushname": "licy🖤",
+      "firstSeen": "2026-07-04T21:40:03.746Z",
+      "lastActivity": "2026-07-04T21:53:32.756Z"
+    },
+    {
+      "id": "240471662153897@lid",
+      "msg": 1,
+      "cmd": 0,
+      "figu": 1,
+      "pushname": "Natanael",
+      "firstSeen": "2026-07-04T21:41:48.354Z",
+      "lastActivity": "2026-07-04T21:41:48.354Z"
+    },
+    {
+      "id": "26994590904420@lid",
+      "msg": 3,
+      "cmd": 0,
+      "figu": 1,
+      "pushname": "~JD77️⃣🥋",
+      "firstSeen": "2026-07-04T21:43:13.960Z",
+      "lastActivity": "2026-07-04T23:16:21.774Z"
+    },
+    {
+      "id": "149388206821401@lid",
+      "msg": 2,
+      "cmd": 0,
+      "figu": 2,
+      "pushname": "Jão",
+      "firstSeen": "2026-07-04T21:43:48.788Z",
+      "lastActivity": "2026-07-04T22:14:21.705Z"
+    },
+    {
+      "id": "223347442999446@lid",
+      "msg": 2,
+      "cmd": 0,
+      "figu": 0,
+      "pushname": "akoto",
+      "firstSeen": "2026-07-04T21:43:50.697Z",
+      "lastActivity": "2026-07-04T21:44:12.731Z"
+    }
+  ]
+}

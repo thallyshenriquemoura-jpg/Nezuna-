@@ -1,0 +1,26 @@
+{
+  "mark": {},
+  "createdAt": "2026-07-04T23:16:27.780Z",
+  "groupName": "Cabaré dos cria👄",
+  "modorpg": false,
+  "minMessage": null,
+  "moderators": [],
+  "allowedModCommands": [],
+  "mutedUsers": {},
+  "mutedUsers2": {},
+  "levelingEnabled": false,
+  "adminWhitelist": {},
+  "roles": {},
+  "roleMessages": {},
+  "contador": [
+    {
+      "id": "245320210468899@lid",
+      "msg": 1,
+      "cmd": 0,
+      "figu": 1,
+      "pushname": "Mateus",
+      "firstSeen": "2026-07-04T23:16:27.800Z",
+      "lastActivity": "2026-07-04T23:16:27.800Z"
+    }
+  ]
+}
