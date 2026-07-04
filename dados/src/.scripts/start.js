@@ -268,13 +268,14 @@ async function main() {
     await setupTermuxAutostart();
 
     const hasSession = await checkAutoConnect();
-    if (hasSession) {
-      mensagem('📷 Sessão de QR Code detectada. Conectando automaticamente...');
-      startBot(false);
-    } else {
-      const { method } = await promptConnectionMethod();
-      startBot(method === 'code');
-    }
+
+if (hasSession) {
+  mensagem('📷 Sessão detectada. Conectando automaticamente...');
+  startBot(false);
+} else {
+  mensagem('🔑 Nenhuma sessão encontrada. Iniciando automaticamente via código de pareamento...');
+  startBot(true);
+}
   } catch (error) {
     aviso(`❌ Erro inesperado: ${error.message}`);
     process.exit(1);
